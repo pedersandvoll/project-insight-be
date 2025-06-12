@@ -1,0 +1,14 @@
+@hostname=localhost
+@port=3000
+@host=http://{{hostname}}:{{port}}
+@bearer_token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55aWQiOiI0ZmJiODA2My00NmQwLTRkY2UtYjBlOC05NTRlMDY5NGI0ODUiLCJlbWFpbCI6ImpvaG5AZW1haWwuY29tIiwiZXhwIjoxNzQ5ODExMzkyLCJ1c2VyaWQiOiJkZmU0NzlkOC1kMWJlLTQzNTUtOWM4Yi03NGUxNjAyYTJjMWYiLCJ1c2VybmFtZSI6IkpvaG5Eb2UifQ.DozJQRxTxzEp7lTFOZdLTdodR3QTH1qKhvxFk2l8ARI
+
+### create budget
+POST {{host}}/budget/create/94acd624-5f9a-4d3d-9bd2-47e94bf65037
+Content-Type: application/json
+Authorization: {{bearer_token}}
+
+{
+    "budgetused": 1000
+}
+

@@ -65,6 +65,7 @@ type Projects struct {
 	ModifiedAt    time.Time `gorm:"autoUpdateTime"`
 	ModifiedByID  uuid.UUID `gorm:"type:char(36);not null"`
 	ModifiedBy    *Users    `gorm:"foreignKey:ModifiedByID;references:ID"`
+	Budgets       []Budgets `gorm:"foreignKey:ProjectID;references:ID"`
 }
 
 type Budgets struct {
