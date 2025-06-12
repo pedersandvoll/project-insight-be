@@ -56,16 +56,17 @@ type Companies struct {
 
 type Projects struct {
 	BaseModel
-	Name          string    `gorm:"size:100"`
-	Description   string    `gorm:"type:text"`
-	Status        Status    `gorm:"type:integer"`
-	EstimatedCost uint      `gorm:"type:integer"`
-	CreatedByID   uuid.UUID `gorm:"type:char(36);not null"`
-	CreatedBy     *Users    `gorm:"foreignKey:CreatedByID;references:ID"`
-	ModifiedAt    time.Time `gorm:"autoUpdateTime"`
-	ModifiedByID  uuid.UUID `gorm:"type:char(36);not null"`
-	ModifiedBy    *Users    `gorm:"foreignKey:ModifiedByID;references:ID"`
-	Budgets       []Budgets `gorm:"foreignKey:ProjectID;references:ID"`
+	Name            string         `gorm:"size:100"`
+	Description     string         `gorm:"type:text"`
+	Status          Status         `gorm:"type:integer"`
+	EstimatedCost   uint           `gorm:"type:integer"`
+	CreatedByID     uuid.UUID      `gorm:"type:char(36);not null"`
+	CreatedBy       *Users         `gorm:"foreignKey:CreatedByID;references:ID"`
+	ModifiedAt      time.Time      `gorm:"autoUpdateTime"`
+	ModifiedByID    uuid.UUID      `gorm:"type:char(36);not null"`
+	ModifiedBy      *Users         `gorm:"foreignKey:ModifiedByID;references:ID"`
+	Budgets         []Budgets      `gorm:"foreignKey:ProjectID;references:ID"`
+	AssociatedUsers []ProjectUsers `gorm:"foreignKey:ProjectID;references:ID"`
 }
 
 type Budgets struct {
@@ -94,6 +95,7 @@ type ProjectUsers struct {
 	Project   *Projects `gorm:"foreignKey:ProjectID;references:ID"`
 	UserID    uuid.UUID `gorm:"type:char(36);not null;index"`
 	User      *Users    `gorm:"foreignKey:UserID;references:ID"`
+	Role      string    `gorm:"type:varchar(150);not null"`
 }
 
 type CompanyProjects struct {
