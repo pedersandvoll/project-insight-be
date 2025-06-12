@@ -30,7 +30,6 @@ func main() {
 	h := handlers.NewHandlers(db, dbConfig.JWTSecret)
 
 	routes.AuthRoutes(app, h)
-	routes.Routes(app, h)
 
 	app.Listen(":3000")
 }
