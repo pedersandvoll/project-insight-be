@@ -14,4 +14,5 @@ func ProjectRoutes(app *fiber.App, h *handlers.Handlers) {
 
 	api.Get("/", h.GetProjects)
 	api.Post("/create", h.CreateProject)
+	api.Post("/assign/:projectid", h.AssignUserToProject)
 }

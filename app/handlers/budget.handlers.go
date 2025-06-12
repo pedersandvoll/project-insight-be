@@ -26,17 +26,17 @@ func (h *Handlers) CreateBudget(c *fiber.Ctx) error {
 		})
 	}
 
-	projectIDStr := c.Params("id")
+	projectIDStr := c.Params("projectid")
 	if projectIDStr == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID is required in the URL",
+			"error": "ProjectID is required in the URL",
 		})
 	}
 
 	projectID, err := uuid.Parse(projectIDStr)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid complaint ID format",
+			"error": "Invalid ProjectID format",
 		})
 	}
 

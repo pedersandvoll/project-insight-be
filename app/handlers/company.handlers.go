@@ -79,17 +79,17 @@ func (h *Handlers) JoinCompany(c *fiber.Ctx) error {
 		})
 	}
 
-	companyIDStr := c.Params("id")
+	companyIDStr := c.Params("companyid")
 	if companyIDStr == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID is required in the URL",
+			"error": "CompanyID is required in the URL",
 		})
 	}
 
 	companyID, err := uuid.Parse(companyIDStr)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid complaint ID format",
+			"error": "Invalid CompanyID format",
 		})
 	}
 
