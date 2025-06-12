@@ -38,12 +38,10 @@ const (
 
 type Users struct {
 	BaseModel
-	FirstName string     `gorm:"size:100"`
-	LastName  string     `gorm:"size:100"`
-	Email     string     `gorm:"uniqueIndex"`
-	Password  string     `gorm:"type:text"`
-	CompanyID *uuid.UUID `gorm:"type:char(36);index"`
-	Company   *Companies `gorm:"foreignKey:CompanyID;references:ID"`
+	FirstName string `gorm:"size:100"`
+	LastName  string `gorm:"size:100"`
+	Email     string `gorm:"uniqueIndex"`
+	Password  string `gorm:"type:text"`
 }
 
 type Companies struct {
@@ -81,6 +79,14 @@ type Budgets struct {
 	ModifiedBy   *Users    `gorm:"foreignKey:ModifiedByID;references:ID"`
 }
 
+type CompanyUsers struct {
+	BaseModel
+	CompanyID uuid.UUID  `gorm:"type:char(36);not null;index"`
+	Company   *Companies `gorm:"foreignKey:CompanyID;references:ID"`
+	UserID    uuid.UUID  `gorm:"type:char(36);not null;index"`
+	User      *Users     `gorm:"foreignKey:UserID;references:ID"`
+}
+
 type ProjectUsers struct {
 	BaseModel
 	ProjectID uuid.UUID `gorm:"type:char(36);not null;index"`
@@ -103,6 +109,7 @@ func RunMigrations(db *gorm.DB) {
 		&Companies{},
 		&Projects{},
 		&Budgets{},
+		&CompanyUsers{},
 		&ProjectUsers{},
 		&CompanyProjects{},
 	)
