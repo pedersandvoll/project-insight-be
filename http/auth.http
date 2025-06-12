@@ -1,0 +1,24 @@
+@hostname=localhost
+@port=3000
+@host=http://{{hostname}}:{{port}}
+@bearer_token = Bearer token-from-login-endpoint
+
+### register user
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+    "email": "john@email.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "password": "SuperSecretPassword123"
+}
+
+### login user
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "john@email.com",
+    "password": "SuperSecretPassword123"
+}
