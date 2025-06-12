@@ -41,7 +41,7 @@ type Users struct {
 	FirstName string `gorm:"size:100"`
 	LastName  string `gorm:"size:100"`
 	Email     string `gorm:"uniqueIndex"`
-	Password  string `gorm:"type:text"`
+	Password  string `gorm:"type:text" json:"-"`
 }
 
 type Companies struct {
