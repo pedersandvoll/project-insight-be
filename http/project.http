@@ -1,0 +1,22 @@
+@hostname=localhost
+@port=3000
+@host=http://{{hostname}}:{{port}}
+@bearer_token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55aWQiOiI0ZmJiODA2My00NmQwLTRkY2UtYjBlOC05NTRlMDY5NGI0ODUiLCJlbWFpbCI6ImpvaG5AZW1haWwuY29tIiwiZXhwIjoxNzQ5ODExMzkyLCJ1c2VyaWQiOiJkZmU0NzlkOC1kMWJlLTQzNTUtOWM4Yi03NGUxNjAyYTJjMWYiLCJ1c2VybmFtZSI6IkpvaG5Eb2UifQ.DozJQRxTxzEp7lTFOZdLTdodR3QTH1qKhvxFk2l8ARI
+
+### get projects
+GET {{host}}/project
+Content-Type: application/json
+Authorization: {{bearer_token}}
+
+### create project
+POST {{host}}/project/create
+Content-Type: application/json
+Authorization: {{bearer_token}}
+
+{
+    "name": "Smart Hagevanner Pro",
+    "description": "Et intelligent vanningssystem for hagen din, utstyrt med fuktsensorer, værmeldingstilkobling og Wi-Fi-styring via mobilapp. Optimaliserer vannforbruket basert på plantenes behov og lokale værforhold, noe som sparer både vann og tid. Enkel å installere og programmerbar for ulike soner, slik at hver del av hagen din får akkurat den mengden vann den trenger. Kompatibel med de fleste eksisterende vanningssystemer.",
+    "status": 1,
+    "estimatedcost": 4999
+}
+
