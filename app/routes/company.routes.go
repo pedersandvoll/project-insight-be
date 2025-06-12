@@ -13,5 +13,5 @@ func CompanyRoutes(app *fiber.App, h *handlers.Handlers) {
 	api.Use(middleware.AuthRequired(h.JWTSecret))
 
 	api.Post("/create", h.CreateCompany)
-	api.Post("/join/:id", h.JoinCompany)
+	api.Post("/join/:companyid", h.JoinCompany)
 }

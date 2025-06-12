@@ -20,3 +20,13 @@ Authorization: {{bearer_token}}
     "estimatedcost": 4999
 }
 
+### create project
+POST {{host}}/project/assign/94acd624-5f9a-4d3d-9bd2-47e94bf65037
+Content-Type: application/json
+Authorization: {{bearer_token}}
+
+{
+    "userid": "dfe479d8-d1be-4355-9c8b-74e1602a2c1f",
+    "role": "Developer"
+}
+

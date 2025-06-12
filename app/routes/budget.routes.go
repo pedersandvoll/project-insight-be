@@ -12,5 +12,5 @@ func BudgetRoutes(app *fiber.App, h *handlers.Handlers) {
 	api := app.Group("/budget")
 	api.Use(middleware.AuthRequired(h.JWTSecret))
 
-	api.Post("/create/:id", h.CreateBudget)
+	api.Post("/create/:projectid", h.CreateBudget)
 }
