@@ -31,6 +31,7 @@ func main() {
 
 	routes.AuthRoutes(app, h)
 	routes.CompanyRoutes(app, h)
+	routes.ProjectRoutes(app, h)
 
 	app.Listen(":3000")
 }
