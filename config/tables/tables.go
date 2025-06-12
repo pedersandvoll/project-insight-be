@@ -42,7 +42,7 @@ type Users struct {
 	LastName  string     `gorm:"size:100"`
 	Email     string     `gorm:"uniqueIndex"`
 	Password  string     `gorm:"type:text"`
-	CompanyID uuid.UUID  `gorm:"type:char(36);not null;index"`
+	CompanyID *uuid.UUID `gorm:"type:char(36);index"`
 	Company   *Companies `gorm:"foreignKey:CompanyID;references:ID"`
 }
 
