@@ -104,6 +104,7 @@ func (h *Handlers) GetProjects(c *fiber.Ctx) error {
 	var projects []tables.Projects
 	result := h.db.Preload("CreatedBy").
 		Preload("ModifiedBy").
+		Preload("Budgets").
 		Joins("JOIN company_projects ON projects.id = company_projects.project_id").
 		Where("company_projects.company_id = ?", companyID).
 		Find(&projects)
