@@ -38,20 +38,22 @@ const (
 
 type Users struct {
 	BaseModel
-	FirstName string `gorm:"size:100"`
-	LastName  string `gorm:"size:100"`
-	Email     string `gorm:"uniqueIndex"`
-	Password  string `gorm:"type:text"`
+	FirstName string     `gorm:"size:100"`
+	LastName  string     `gorm:"size:100"`
+	Email     string     `gorm:"uniqueIndex"`
+	Password  string     `gorm:"type:text"`
+	CompanyID uuid.UUID  `gorm:"type:char(36);not null;index"`
+	Company   *Companies `gorm:"foreignKey:CompanyID;references:ID"`
 }
 
 type Companies struct {
 	BaseModel
 	Name         string    `gorm:"size:100"`
 	CreatedByID  uuid.UUID `gorm:"type:char(36);not null"`
-	CreatedBy    Users     `gorm:"foreignKey:CreatedByID;references:ID"`
+	CreatedBy    *Users    `gorm:"foreignKey:CreatedByID;references:ID"`
 	ModifiedAt   time.Time `gorm:"autoUpdateTime"`
 	ModifiedByID uuid.UUID `gorm:"type:char(36);not null"`
-	ModifiedBy   Users     `gorm:"foreignKey:ModifiedByID;references:ID"`
+	ModifiedBy   *Users    `gorm:"foreignKey:ModifiedByID;references:ID"`
 }
 
 type Projects struct {
@@ -61,38 +63,38 @@ type Projects struct {
 	Status        Status    `gorm:"type:integer"`
 	EstimatedCost uint      `gorm:"type:integer"`
 	CreatedByID   uuid.UUID `gorm:"type:char(36);not null"`
-	CreatedBy     Users     `gorm:"foreignKey:CreatedByID;references:ID"`
+	CreatedBy     *Users    `gorm:"foreignKey:CreatedByID;references:ID"`
 	ModifiedAt    time.Time `gorm:"autoUpdateTime"`
 	ModifiedByID  uuid.UUID `gorm:"type:char(36);not null"`
-	ModifiedBy    Users     `gorm:"foreignKey:ModifiedByID;references:ID"`
+	ModifiedBy    *Users    `gorm:"foreignKey:ModifiedByID;references:ID"`
 }
 
 type Budgets struct {
 	BaseModel
 	ProjectID    uuid.UUID `gorm:"type:char(36);not null;index"`
-	Project      Projects  `gorm:"foreignKey:ProjectID;references:ID"`
+	Project      *Projects `gorm:"foreignKey:ProjectID;references:ID"`
 	BudgetUsed   uint      `gorm:"type:integer"`
 	CreatedByID  uuid.UUID `gorm:"type:char(36);not null"`
-	CreatedBy    Users     `gorm:"foreignKey:CreatedByID;references:ID"`
+	CreatedBy    *Users    `gorm:"foreignKey:CreatedByID;references:ID"`
 	ModifiedAt   time.Time `gorm:"autoUpdateTime"`
 	ModifiedByID uuid.UUID `gorm:"type:char(36);not null"`
-	ModifiedBy   Users     `gorm:"foreignKey:ModifiedByID;references:ID"`
+	ModifiedBy   *Users    `gorm:"foreignKey:ModifiedByID;references:ID"`
 }
 
 type ProjectUsers struct {
 	BaseModel
 	ProjectID uuid.UUID `gorm:"type:char(36);not null;index"`
-	Project   Projects  `gorm:"foreignKey:ProjectID;references:ID"`
+	Project   *Projects `gorm:"foreignKey:ProjectID;references:ID"`
 	UserID    uuid.UUID `gorm:"type:char(36);not null;index"`
-	User      Users     `gorm:"foreignKey:UserID;references:ID"`
+	User      *Users    `gorm:"foreignKey:UserID;references:ID"`
 }
 
 type CompanyProjects struct {
 	BaseModel
-	CompanyID uuid.UUID `gorm:"type:char(36);not null;index"`
-	Company   Companies `gorm:"foreignKey:CompanyID;references:ID"`
-	ProjectID uuid.UUID `gorm:"type:char(36);not null;index"`
-	Project   Projects  `gorm:"foreignKey:ProjectID;references:ID"`
+	CompanyID uuid.UUID  `gorm:"type:char(36);not null;index"`
+	Company   *Companies `gorm:"foreignKey:CompanyID;references:ID"`
+	ProjectID uuid.UUID  `gorm:"type:char(36);not null;index"`
+	Project   *Projects  `gorm:"foreignKey:ProjectID;references:ID"`
 }
 
 func RunMigrations(db *gorm.DB) {
