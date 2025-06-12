@@ -43,7 +43,7 @@ func (h *Handlers) RegisterUser(c *fiber.Ctx) error {
 		LastName:  body.LastName,
 		Password:  hashedPassword,
 	}
-	result := h.db.DB.Create(&user)
+	result := h.db.Create(&user)
 
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key value") {
@@ -80,7 +80,7 @@ func (h *Handlers) LoginUser(c *fiber.Ctx) error {
 	}
 
 	var user tables.Users
-	result := h.db.DB.Where("email = ?", body.Email).First(&user)
+	result := h.db.Where("email = ?", body.Email).First(&user)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -103,11 +103,18 @@ func (h *Handlers) LoginUser(c *fiber.Ctx) error {
 		})
 	}
 
+	var companyUser tables.CompanyUsers
+	companyResult := h.db.Where("user_id = ?", user.ID).First(&companyUser)
+
 	claims := jwt.MapClaims{
 		"username": user.FirstName + user.LastName,
 		"userid":   user.ID,
 		"email":    user.Email,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	}
+
+	if companyResult.Error == nil {
+		claims["companyid"] = companyUser.CompanyID
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
