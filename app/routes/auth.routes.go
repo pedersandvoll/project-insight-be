@@ -8,8 +8,8 @@ import (
 
 func AuthRoutes(app *fiber.App, h *handlers.Handlers) {
 	app.Use(cors.New())
-	r := app.Group("/auth")
+	api := app.Group("/auth")
 
-	r.Post("/register", h.RegisterUser)
-	r.Post("/login", h.LoginUser)
+	api.Post("/register", h.RegisterUser)
+	api.Post("/login", h.LoginUser)
 }
