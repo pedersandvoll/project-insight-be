@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/pedersandvoll/project-insight-be/app/handlers"
+	"github.com/pedersandvoll/project-insight-be/config/middleware"
 )
 
 func AuthRoutes(app *fiber.App, h *handlers.Handlers) {
@@ -12,4 +13,7 @@ func AuthRoutes(app *fiber.App, h *handlers.Handlers) {
 
 	api.Post("/register", h.RegisterUser)
 	api.Post("/login", h.LoginUser)
+
+	api.Use(middleware.AuthRequired(h.JWTSecret))
+	api.Get("/currentuser", h.GetCurrentUserInformation)
 }

@@ -126,3 +126,33 @@ func (h *Handlers) LoginUser(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"token": t})
 }
+
+func (h *Handlers) GetCurrentUserInformation(c *fiber.Ctx) error {
+	token := c.Locals("user").(*jwt.Token)
+	if token == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized - Missing JWT token",
+		})
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	userID, err := utils.GetUserIDFromClaims(claims)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	var user tables.Users
+	result := h.db.Where("id = ?", userID).First(&user)
+
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve user",
+			"msg":   result.Error.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(user)
+}
