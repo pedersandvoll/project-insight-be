@@ -13,6 +13,10 @@ type CreateProjectDTO struct {
 }
 
 type AssignUserToProjectDTO struct {
-	Role   string    `json:"role"`
-	UserID uuid.UUID `json:"userid"`
+	Role   tables.Role `json:"role"`
+	UserID uuid.UUID   `json:"userid"`
+}
+
+type UpdateProjectStatusDTO struct {
+	Status tables.Status `json:"status"`
 }

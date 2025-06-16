@@ -13,6 +13,9 @@ func ProjectRoutes(app *fiber.App, h *handlers.Handlers) {
 	api.Use(middleware.AuthRequired(h.JWTSecret))
 
 	api.Get("/", h.GetProjects)
+	api.Get("/dashboard", h.GetProjectsDashboard)
+	api.Get("/:projectid", h.GetProjectById)
 	api.Post("/create", h.CreateProject)
 	api.Post("/assign/:projectid", h.AssignUserToProject)
+	api.Patch("/status/:projectid", h.UpdateProjectStatus)
 }
