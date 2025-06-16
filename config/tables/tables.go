@@ -36,12 +36,30 @@ const (
 	StatusCancelled // Project officially stopped before completion.
 )
 
+type Role int
+
+const (
+	RoleProjectlead Role = iota
+	RoleContactperson
+	RoleTechlead
+	RoleDeveloper
+	RoleDesigner
+)
+
 type Users struct {
 	BaseModel
-	FirstName string `gorm:"size:100"`
-	LastName  string `gorm:"size:100"`
-	Email     string `gorm:"uniqueIndex"`
-	Password  string `gorm:"type:text" json:"-"`
+	FirstName string      `gorm:"size:100"`
+	LastName  string      `gorm:"size:100"`
+	Email     string      `gorm:"uniqueIndex"`
+	Password  string      `gorm:"type:text" json:"-"`
+	Roles     []UserRoles `gorm:"foreignKey:UserID;references:ID"`
+}
+
+type UserRoles struct {
+	BaseModel
+	Role   Role      `gorm:"type:integer"`
+	UserID uuid.UUID `gorm:"type:char(36);not null;index"`
+	User   *Users    `gorm:"foreignKey:UserID;references:ID"`
 }
 
 type Companies struct {
@@ -95,7 +113,7 @@ type ProjectUsers struct {
 	Project   *Projects `gorm:"foreignKey:ProjectID;references:ID"`
 	UserID    uuid.UUID `gorm:"type:char(36);not null;index"`
 	User      *Users    `gorm:"foreignKey:UserID;references:ID"`
-	Role      string    `gorm:"type:varchar(150);not null"`
+	Role      Role      `gorm:"type:integer"`
 }
 
 type CompanyProjects struct {
@@ -109,6 +127,7 @@ type CompanyProjects struct {
 func RunMigrations(db *gorm.DB) {
 	db.AutoMigrate(
 		&Users{},
+		&UserRoles{},
 		&Companies{},
 		&Projects{},
 		&Budgets{},
