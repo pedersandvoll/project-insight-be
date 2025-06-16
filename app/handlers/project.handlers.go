@@ -210,18 +210,56 @@ func (h *Handlers) AssignUserToProject(c *fiber.Ctx) error {
 		})
 	}
 
+	var user tables.Users
+	userExist := h.db.Where("id = ?", body.UserID).First(&user)
+
+	if userExist.Error != nil {
+		if errors.Is(userExist.Error, gorm.ErrRecordNotFound) {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "User not found",
+			})
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Database error",
+			"details": userExist.Error.Error(),
+		})
+	}
+
 	projectUser := tables.ProjectUsers{
 		ProjectID: projectID,
 		UserID:    body.UserID,
 		Role:      body.Role,
 	}
-	result := h.db.Create(&projectUser)
+	userRole := tables.UserRoles{
+		UserID: body.UserID,
+		Role:   body.Role,
+	}
 
-	if result.Error != nil {
+	resultProjectUser := h.db.Create(&projectUser)
+
+	if resultProjectUser.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to assign user to project",
-			"msg":   result.Error.Error(),
+			"msg":   resultProjectUser.Error.Error(),
 		})
+	}
+
+	var existingUserRole tables.UserRoles
+	roleCheckResult := h.db.
+		Where("user_id = ?", body.UserID).
+		Where("role = ?", body.Role).
+		First(&existingUserRole)
+
+	if roleCheckResult.Error != nil {
+		resultUserRole := h.db.Create(&userRole)
+
+		if resultUserRole.Error != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to create user role",
+				"msg":   resultUserRole.Error.Error(),
+			})
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
