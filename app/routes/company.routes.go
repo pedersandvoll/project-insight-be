@@ -7,11 +7,14 @@ import (
 	"github.com/pedersandvoll/project-insight-be/config/middleware"
 )
 
+// CompanyRoutes sets up company management routes (all protected)
 func CompanyRoutes(app *fiber.App, h *handlers.Handlers) {
 	app.Use(cors.New())
 	api := app.Group("/company")
 	api.Use(middleware.AuthRequired(h.JWTSecret))
 
+	// Create a new company
 	api.Post("/create", h.CreateCompany)
+	// Join an existing company by ID
 	api.Post("/join/:companyid", h.JoinCompany)
 }
