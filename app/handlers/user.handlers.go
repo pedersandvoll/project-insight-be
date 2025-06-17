@@ -77,7 +77,7 @@ func (h *Handlers) AssignRoleToUser(c *fiber.Ctx) error {
 
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to assigne user to role",
+			"error": "Failed to assign user to role",
 			"msg":   result.Error.Error(),
 		})
 	}

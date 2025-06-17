@@ -26,7 +26,7 @@ func (h *Handlers) RegisterUser(c *fiber.Ctx) error {
 
 	if body.FirstName == "" || body.LastName == "" || body.Password == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Username and password are required",
+			"error": "Name and password is required",
 		})
 	}
 
@@ -44,7 +44,6 @@ func (h *Handlers) RegisterUser(c *fiber.Ctx) error {
 		Password:  hashedPassword,
 	}
 	result := h.db.Create(&user)
-
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key value") {
 			return c.Status(fiber.StatusConflict).JSON(fiber.Map{
@@ -57,6 +56,29 @@ func (h *Handlers) RegisterUser(c *fiber.Ctx) error {
 			"msg":   result.Error.Error(),
 		})
 	}
+
+	var company tables.Companies
+	resultCompany := h.db.First(&company)
+	if resultCompany.Error != nil {
+		if errors.Is(resultCompany.Error, gorm.ErrRecordNotFound) {
+			company = tables.Companies{
+				Name:         "Company",
+				CreatedByID:  user.ID,
+				ModifiedByID: user.ID,
+			}
+			h.db.Create(&company)
+		} else {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Database error",
+			})
+		}
+	}
+
+	comanyUser := tables.CompanyUsers{
+		CompanyID: company.ID,
+		UserID:    user.ID,
+	}
+	h.db.Create(&comanyUser)
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User created successfully",
@@ -85,11 +107,10 @@ func (h *Handlers) LoginUser(c *fiber.Ctx) error {
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": "Invalid credentials",
+				"error": "Email or password are wrong",
 			})
 		}
 
-		fmt.Println("Database error:", result.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to retrieve user",
 			"msg":   result.Error.Error(),

@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/pedersandvoll/project-insight-be/app/types"
 	"github.com/pedersandvoll/project-insight-be/config/tables"
 	"github.com/pedersandvoll/project-insight-be/utils"
@@ -104,10 +104,7 @@ func (h *Handlers) GetProjects(c *fiber.Ctx) error {
 		})
 	}
 
-	statusParams := c.Context().QueryArgs().PeekMulti("status")
-	name := c.Query("name")
-	createdBy := c.Query("createdBy")
-	associated := c.Query("associated")
+	queries := c.Queries()
 
 	var projects []tables.Projects
 	query := h.db.Preload("CreatedBy").
@@ -115,23 +112,27 @@ func (h *Handlers) GetProjects(c *fiber.Ctx) error {
 		Preload("Budgets").
 		Preload("AssociatedUsers").
 		Preload("AssociatedUsers.User").
+		Order("created_at DESC").
 		Joins("JOIN company_projects ON projects.id = company_projects.project_id").
 		Where("company_projects.company_id = ?", companyID)
 
-	if len(statusParams) > 0 {
-		var statuses []string
-		for _, param := range statusParams {
-			statuses = append(statuses, string(param))
+	if statusQuery := utils.GetFilterValue(queries, "status"); statusQuery != "" {
+		statuses := strings.Split(statusQuery, ",")
+		for i, status := range statuses {
+			statuses[i] = strings.TrimSpace(status)
 		}
 		query = query.Where("projects.status IN ?", statuses)
 	}
-	if name != "" {
+
+	if name := utils.GetFilterValue(queries, "name"); name != "" {
 		query = query.Where("projects.name ILIKE ?", "%"+name+"%")
 	}
-	if createdBy != "" {
+
+	if createdBy := utils.GetFilterValue(queries, "createdBy"); createdBy != "" {
 		query = query.Where("projects.created_by_id = ?", createdBy)
 	}
-	if associated != "" {
+
+	if associated := utils.GetFilterValue(queries, "associated"); associated != "" {
 		query = query.Joins("JOIN project_users ON projects.id = project_users.project_id").
 			Where("project_users.user_id = ?", associated)
 	}
@@ -149,17 +150,10 @@ func (h *Handlers) GetProjects(c *fiber.Ctx) error {
 }
 
 func (h *Handlers) GetProjectById(c *fiber.Ctx) error {
-	projectIDStr := c.Params("projectid")
-	if projectIDStr == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ProjectID is required in the URL",
-		})
-	}
-
-	projectID, err := uuid.Parse(projectIDStr)
+	projectID, err := utils.ParseUUIDParam(c, "projectid")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ProjectID format",
+			"error": err.Error(),
 		})
 	}
 
@@ -196,17 +190,10 @@ func (h *Handlers) AssignUserToProject(c *fiber.Ctx) error {
 		})
 	}
 
-	projectIDStr := c.Params("projectid")
-	if projectIDStr == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ProjectID is required in the URL",
-		})
-	}
-
-	projectID, err := uuid.Parse(projectIDStr)
+	projectID, err := utils.ParseUUIDParam(c, "projectid")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ProjectID format",
+			"error": err.Error(),
 		})
 	}
 
@@ -251,6 +238,7 @@ func (h *Handlers) AssignUserToProject(c *fiber.Ctx) error {
 		Where("role = ?", body.Role).
 		First(&existingUserRole)
 
+	//Only create the role if it does not already exist
 	if roleCheckResult.Error != nil {
 		resultUserRole := h.db.Create(&userRole)
 
@@ -335,17 +323,10 @@ func (h *Handlers) GetProjectsDashboard(c *fiber.Ctx) error {
 }
 
 func (h *Handlers) UpdateProjectStatus(c *fiber.Ctx) error {
-	projectIDStr := c.Params("projectid")
-	if projectIDStr == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ProjectID is required in the URL",
-		})
-	}
-
-	projectID, err := uuid.Parse(projectIDStr)
+	projectID, err := utils.ParseUUIDParam(c, "projectid")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ProjectID format",
+			"error": err.Error(),
 		})
 	}
 

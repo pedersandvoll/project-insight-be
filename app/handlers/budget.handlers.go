@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/pedersandvoll/project-insight-be/app/types"
 	"github.com/pedersandvoll/project-insight-be/config/tables"
 	"github.com/pedersandvoll/project-insight-be/utils"
@@ -26,17 +25,10 @@ func (h *Handlers) CreateBudget(c *fiber.Ctx) error {
 		})
 	}
 
-	projectIDStr := c.Params("projectid")
-	if projectIDStr == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ProjectID is required in the URL",
-		})
-	}
-
-	projectID, err := uuid.Parse(projectIDStr)
+	projectID, err := utils.ParseUUIDParam(c, "projectid")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid ProjectID format",
+			"error": err.Error(),
 		})
 	}
 

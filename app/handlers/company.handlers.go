@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/google/uuid"
 	"github.com/pedersandvoll/project-insight-be/app/types"
 	"github.com/pedersandvoll/project-insight-be/config/tables"
 	"github.com/pedersandvoll/project-insight-be/utils"
@@ -28,7 +27,7 @@ func (h *Handlers) CreateCompany(c *fiber.Ctx) error {
 
 	if body.Name == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Username and password are required",
+			"error": "Company name is required",
 		})
 	}
 
@@ -79,17 +78,10 @@ func (h *Handlers) JoinCompany(c *fiber.Ctx) error {
 		})
 	}
 
-	companyIDStr := c.Params("companyid")
-	if companyIDStr == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "CompanyID is required in the URL",
-		})
-	}
-
-	companyID, err := uuid.Parse(companyIDStr)
+	companyID, err := utils.ParseUUIDParam(c, "companyid")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid CompanyID format",
+			"error": err.Error(),
 		})
 	}
 

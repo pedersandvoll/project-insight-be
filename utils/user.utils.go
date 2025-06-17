@@ -7,6 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetUserIDFromClaims extracts and validates the user ID from JWT claims.
+// It returns the parsed UUID of the user or an error if the user ID is missing,
+// or cannot be parsed as a valid UUID.
 func GetUserIDFromClaims(claims jwt.MapClaims) (uuid.UUID, error) {
 	userIDStr, ok := claims["userid"].(string)
 	if !ok {
